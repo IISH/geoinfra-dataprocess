@@ -57,3 +57,5 @@ Unified logging and error handling
 
 If I understand correctly, we need to do something with the exit status to detect error methods. The reason my workflows are continuing after errors is because my scripts are not producing non-zero exit status. What seems -- at the moment -- the best way to set this up is to use the shell protocol, call our script (node, sql, what have you) with the input and output arguments, and let the script a) decide whether it will write to the output file, b) exit with an error. This way we can write something to the log and then still exit with error; or we can exit with error without writing to the log if we prefer.
 
+It would be cool to call test functions from the update scripts as well. This way we can use the output of those to determine exit status, esp. during development.
+
