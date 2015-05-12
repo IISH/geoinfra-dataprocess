@@ -1,0 +1,16 @@
+;Drakefile for CShapes
+
+;First iteration. Going to run this against the database, and see how far we get.
+;Small dataset -- can rerun this many times. Later we'll add more sophisticated testing/dev.
+
+;input files come from this directory
+INPUTDIR=../input
+
+;all work will happen in this directory
+WORKDIR=../process
+
+;first step is creating the working schema
+
+;this creates the geoinfra schema in the database. NOTE: this can be shared by all workflows. If the timestamp is up to date, it needn't be recreated if we request downstream steps.
+$[WORKDIR]/geoinfra.schema, %create_general_schema <-
+    ./create_schema.sh $OUTPUT
