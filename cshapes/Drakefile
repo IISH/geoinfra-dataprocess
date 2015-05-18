@@ -4,17 +4,15 @@
 ;Small dataset -- can rerun this many times. Later we'll add more sophisticated testing/dev.
 
 ;input files come from this directory
-;INPUTDIR=../input
-
+;INPUTDIR=$(sed '1q;d' ../config)
 ;all work will happen in this directory
-;WORKDIR=../process
-
-. ../config
-
-;first step is creating the working schema
+WORKDIR=$(sed '2q;d' ../config)
+PGPASS=$(sed '3q;d' ../config)
 
 ;this creates the geoinfra schema in the database. NOTE: this can be shared by all workflows. If the timestamp is up to date, it needn't be recreated if we request downstream steps.
 $[WORKDIR]/geoinfra.schema, %create_general_schema
-    echo $INPUTDIR;
-    echo $WORKDIR;
-    ;./create_schema.sh $OUTPUT
+    ./create_schema.sh $OUTPUT
+
+;import cshapes with ogr2ogr
+$[WORKDIR]/cshapes-import.table <- %create_general_schema
+    
