@@ -1,2 +1,5 @@
-
+.drake/
+drake.log
+node_modules/
+config
 *.swp

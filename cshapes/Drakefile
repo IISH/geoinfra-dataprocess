@@ -3,16 +3,20 @@
 ;First iteration. Going to run this against the database, and see how far we get.
 ;Small dataset -- can rerun this many times. Later we'll add more sophisticated testing/dev.
 
-;input files come from this directory
-;INPUTDIR=$(sed '1q;d' ../config)
-;all work will happen in this directory
-WORKDIR=$(sed '2q;d' ../config)
-PGPASS=$(sed '3q;d' ../config)
+BASE=$[BASE]/cshapes
 
-;this creates the geoinfra schema in the database. NOTE: this can be shared by all workflows. If the timestamp is up to date, it needn't be recreated if we request downstream steps.
-$[WORKDIR]/geoinfra.schema, %create_general_schema
-    ./create_schema.sh $OUTPUT
 
 ;import cshapes with ogr2ogr
-$[WORKDIR]/cshapes-import.table <- %create_general_schema
-    
+$[WORKDIR]/cshapes-import.table, %import_cshapes <- %create_general_schema
+    echo $INPUTDIR
+    ogr2ogr -progress -overwrite -f "PostgreSQL" PG:"dbname='geo' host='localhost' port='5432' user='geo' password='gwwvgeo'" /home/geo/data/inputdata/perm/iisg/cshapes/cshapes.shp -nln cshapes_import  -lco geometry_name=geom -lco PRECISION=NO -lco SCHEMA="geoinfra" -nlt MULTIPOLYGON | tee -a $OUTPUT
+
+
+;create mutation relations for cshapes
+$[WORKDIR]/insert_cshapes_mutations.log, %load_cshapes_mutations <- %create_relations_table, %import_cshapes
+    node runsql.js -p $PGPASS -o $OUTPUT cshapes/load_cshapes_mutations.sql
+
+;create hierarchical relations for cshapes
+$[WORKDIR]/insert_cshapes_hierarchies.log, %load_cshapes_hierarchies <- %create_relations_table, %import_cshapes
+    echo $BASE
+    node runsql.js -p $PGPASS -o $OUTPUT cshapes/load_cshapes_hierarchies.sql

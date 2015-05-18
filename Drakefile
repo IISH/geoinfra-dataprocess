@@ -1,0 +1,50 @@
+;General Drakefile that loads the others and does stuff not specific to particular dataset.
+
+
+;input files come from this directory
+INPUTDIR=$(sed '1q;d' ./config)
+;all work will happen in this directory
+WORKDIR=$(sed '2q;d' ./config)
+PGPASS=$(sed '3q;d' ./config)
+
+
+;DEVELOPMENT: drop the schema to reset! We can do this because it's a small dataset.
+$[WORKDIR]/restart.log, %restart <-
+    node restart.js -p $PGPASS -o $OUTPUT
+
+;this creates the geoinfra schema in the database. NOTE: this can be shared by all workflows. If the timestamp is up to date, it needn't be recreated if we request downstream steps.
+$[WORKDIR]/geoinfra.schema, %create_general_schema <- $[WORKDIR]/restart.log
+    ./create_schema.sh | tee -a $OUTPUT
+
+;create the entities table (TODO: move this to a different drakefile!)
+;TODO: the cshapes fill is independent of the entities table creation. this step should be 'add_cshapes_to_entities', and create_entities_table should be elsewhere.
+$[WORKDIR]/entities.table, %create_entities_table <- %create_general_schema, %import_cshapes
+    node runsql.js -p $PGPASS -o $OUTPUT cshapes/create_entities_table.sql
+
+
+;create relations table
+$[WORKDIR]/relations.table, %create_relations_table <- %create_general_schema
+    node runsql.js -p $PGPASS -o $OUTPUT cshapes/create_relations_table.sql
+
+
+;Drakefile for CShapes
+
+;First iteration. Going to run this against the database, and see how far we get.
+;Small dataset -- can rerun this many times. Later we'll add more sophisticated testing/dev.
+
+
+
+;import cshapes with ogr2ogr
+$[WORKDIR]/cshapes-import.table, %import_cshapes <- %create_general_schema
+    echo $WORKDIR
+    ogr2ogr -progress -overwrite -f "PostgreSQL" PG:"dbname='geo' host='localhost' port='5432' user='geo' password='gwwvgeo'" /home/geo/data/inputdata/perm/iisg/cshapes/cshapes.shp -nln cshapes_import  -lco geometry_name=geom -lco PRECISION=NO -lco SCHEMA="geoinfra" -nlt MULTIPOLYGON | tee -a $OUTPUT
+
+
+;create mutation relations for cshapes
+$[WORKDIR]/insert_cshapes_mutations.log, %load_cshapes_mutations <- %create_relations_table, %import_cshapes
+    node runsql.js -p $PGPASS -o $OUTPUT cshapes/load_cshapes_mutations.sql
+
+;create hierarchical relations for cshapes
+$[WORKDIR]/insert_cshapes_hierarchies.log, %load_cshapes_hierarchies <- %create_relations_table, %import_cshapes
+    echo $BASE
+    node runsql.js -p $PGPASS -o $OUTPUT cshapes/load_cshapes_hierarchies.sql
