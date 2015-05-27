@@ -19,9 +19,9 @@ $[WORKDIR]/cshapes-add-entities.log, %add_cshapes_entities <- %create_entities_t
 
 ;create mutation relations for cshapes
 $[WORKDIR]/insert_cshapes_mutations.log, %load_cshapes_mutations <- %create_relations_table, %import_cshapes
-    node runsql.js -p $PGPASS -o $OUTPUT cshapes/load_cshapes_mutations.sql
+    node runsql.js -p $PGPASS -o $OUTPUT $[BASE]/load_cshapes_mutations.sql
 
 ;create hierarchical relations for cshapes
 $[WORKDIR]/insert_cshapes_hierarchies.log, %load_cshapes_hierarchies <- %create_relations_table, %import_cshapes
     echo $BASE
-    node runsql.js -p $PGPASS -o $OUTPUT cshapes/load_cshapes_hierarchies.sql
+    node runsql.js -p $PGPASS -o $OUTPUT $[BASE]/load_cshapes_hierarchies.sql
