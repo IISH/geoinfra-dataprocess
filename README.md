@@ -59,3 +59,10 @@ If I understand correctly, we need to do something with the exit status to detec
 
 It would be cool to call test functions from the update scripts as well. This way we can use the output of those to determine exit status, esp. during development.
 
+
+TopoJSON
+--------
+
+We need to create topojson. Either pre-cached or on-the-fly. We need a separate endpoint for it. Everything prefixed with `topojson`.
+
+Then we need to create on-the-fly request handlers. But, if we start doing that, then we might as well ditch apache entirely and run our api with nodejs. So, let's say we can only request 'countries' as topojson for now, with time parameters. No entity filtering. Then we can create files for those, and redirect straight to them.

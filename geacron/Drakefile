@@ -1,0 +1,6 @@
+BASE=$[BASE]/$[SUBTASK_NAME]
+
+test1.log <-
+	echo 'hi' > $[BASE]/test.file
+	ls $[BASE]/../$[WORKDIR]
+	cat $[BASE]/test.file

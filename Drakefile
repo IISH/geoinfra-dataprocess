@@ -48,3 +48,7 @@ $[WORKDIR]/insert_cshapes_mutations.log, %load_cshapes_mutations <- %create_rela
 $[WORKDIR]/insert_cshapes_hierarchies.log, %load_cshapes_hierarchies <- %create_relations_table, %import_cshapes
     echo $BASE
     node runsql.js -p $PGPASS -o $OUTPUT cshapes/load_cshapes_hierarchies.sql
+
+
+SUBTASK_NAME=geacron
+%call geacron/Drakefile
