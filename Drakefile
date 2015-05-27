@@ -33,3 +33,6 @@ SUBTASK_NAME=cshapes
 
 SUBTASK_NAME=geacron
 %call geacron/Drakefile
+
+SUBTASK_NAME=clioinfra
+%call clioinfra/Drakefile

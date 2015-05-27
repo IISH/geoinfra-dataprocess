@@ -1,0 +1,26 @@
+CREATE TABLE geoinfra.pop (
+    year integer,
+    austriahungary float,
+    belgium float,
+    bulgaria float,
+    denmark float,
+    finland float,
+    france float,
+    germany float,
+    greece float,
+    italy float,
+    netherlands float,
+    norway float,
+    portugal float,
+    romania float,
+    russia float,
+    serbia float,
+    spain float,
+    sweden float,
+    switzerland float,
+    turkey float,
+    uk float,
+    europe float,
+    usa float
+);
+

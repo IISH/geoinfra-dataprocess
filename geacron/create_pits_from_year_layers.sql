@@ -104,3 +104,25 @@ and (a.year||'-01-01')::date <@ b.time
 
 --ok, now we can select from there with a year parameter.
 --for year queries we can select fro
+
+
+--view
+with gdp_with_geom as (
+select b.*, a.amount, a.year from geoinfra.gdp_unpivot a
+right outer join geoinfra.entities b
+on a.name = lower(b.name)
+and (a.year||'-01-01')::date <@ b.time
+),
+stats as (
+select avg(amount) as avg,
+stddev(amount) as stddev
+from geoinfra.pop_unpivot
+)
+select
+gdp_with_geom.id,
+gdp_with_geom.name,
+gdp_with_geom.geometry as geom,
+(gdp_with_geom.year||'-01-01 00:00:00.0Z')::timestamp as date,
+gdp_with_geom.amount as data,
+(gdp_with_geom.amount - avg) / stddev as normalized_data
+from stats, gdp_with_geom
