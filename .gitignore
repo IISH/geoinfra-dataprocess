@@ -3,3 +3,5 @@ drake.log
 node_modules/
 config
 *.swp
+
+geacron/.geacron_add_column_to_shape.sh.swo

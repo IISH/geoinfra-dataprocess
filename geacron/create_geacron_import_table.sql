@@ -11,6 +11,6 @@ CREATE TABLE geoinfra.geacron_import (
      tp_area character varying,
      area character varying,
      supra_area character varying,
-     datesrc character varying,
+     date character varying,
      CONSTRAINT geacron_import_pkey PRIMARY KEY (ogc_fid)
 );

@@ -39,8 +39,9 @@ select st_srid(geom) from geoinfra.geacron1;
 update geoinfra.geacron1 set geom = st_setsrid(geom,4326);
 
 insert into geoinfra.entities (name, time, geometry, source_id)
-
-select area as name, daterange((min(year)||'-01-01')::date, (max(year)+19||'-12-31')::date) as time, geom as geometry, 2 as source_id from geoinfra.geacron1 group by area, supra_area, geom
+select area as name, daterange((min(year)||'-01-01')::date, (max(year)+19||'-12-31')::date) as time, geom as geometry, 2 as source_id
+from geoinfra.geacron1
+group by area, supra_area, geom
 
 --note the end of the daterange extended
 --note that that would need to be patched to join geacron seamlessly to cshapes. e.g. canada is like this:

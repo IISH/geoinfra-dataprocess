@@ -50,6 +50,10 @@ The location of these other directories could be specified with a config file wh
 
 This avoids storing data in the repo (size and licensing issues).
 
+We also need some connection parameters including passwords. At the very least we shouldn't store these in our git repos. So we put these in a config file too, and read that in our Drakefile. A rudimentary method to do this is 'manually' with sed or something like that.
+
+The scripts contain variables which are interpolated with the config values. Note that this doesn't make the scripts unuseable on their own; you can pass them arguments on the command line.
+
 
 
 Unified logging and error handling

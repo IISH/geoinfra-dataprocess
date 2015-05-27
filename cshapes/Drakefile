@@ -4,13 +4,18 @@
 ;Small dataset -- can rerun this many times. Later we'll add more sophisticated testing/dev.
 
 BASE=$[BASE]/cshapes
+WORKDIR=../$[WORKDIR]
 
 
 ;import cshapes with ogr2ogr
 $[WORKDIR]/cshapes-import.table, %import_cshapes <- %create_general_schema
     echo $INPUTDIR
-    ogr2ogr -progress -overwrite -f "PostgreSQL" PG:"dbname='geo' host='localhost' port='5432' user='geo' password='gwwvgeo'" /home/geo/data/inputdata/perm/iisg/cshapes/cshapes.shp -nln cshapes_import  -lco geometry_name=geom -lco PRECISION=NO -lco SCHEMA="geoinfra" -nlt MULTIPOLYGON | tee -a $OUTPUT
+    echo $WORKDIR
+    ogr2ogr -progress -overwrite -f "PostgreSQL" PG:"dbname='geo' host='localhost' port='5432' user='$PGUSER' password='$PGPASS'" $[INPUTDIR]/cshapes/cshapes.shp -nln cshapes_import  -lco geometry_name=geom -lco PRECISION=NO -lco SCHEMA="geoinfra" -lco overwrite=yes -nlt MULTIPOLYGON | tee -a $OUTPUT
 
+;add cshapes to entities table
+$[WORKDIR]/cshapes-add-entities.log, %add_cshapes_entities <- %create_entities_table, %import_cshapes
+    node runsql.js -P $PGPASS -o $OUTPUT $[BASE]/fill_entities_table.sql
 
 ;create mutation relations for cshapes
 $[WORKDIR]/insert_cshapes_mutations.log, %load_cshapes_mutations <- %create_relations_table, %import_cshapes
