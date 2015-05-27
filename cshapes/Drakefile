@@ -15,13 +15,13 @@ $[WORKDIR]/cshapes-import.table, %import_cshapes <- %create_general_schema
 
 ;add cshapes to entities table
 $[WORKDIR]/cshapes-add-entities.log, %add_cshapes_entities <- %create_entities_table, %import_cshapes
-    node runsql.js -p $PGPASS -o $OUTPUT $[BASE]/fill_entities_table.sql
+    node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT $[BASE]/fill_entities_table.sql
 
 ;create mutation relations for cshapes
 $[WORKDIR]/insert_cshapes_mutations.log, %load_cshapes_mutations <- %create_relations_table, %import_cshapes
-    node runsql.js -p $PGPASS -o $OUTPUT $[BASE]/load_cshapes_mutations.sql
+    node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT $[BASE]/load_cshapes_mutations.sql
 
 ;create hierarchical relations for cshapes
 $[WORKDIR]/insert_cshapes_hierarchies.log, %load_cshapes_hierarchies <- %create_relations_table, %import_cshapes
     echo $BASE
-    node runsql.js -p $PGPASS -o $OUTPUT $[BASE]/load_cshapes_hierarchies.sql
+    node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT $[BASE]/load_cshapes_hierarchies.sql

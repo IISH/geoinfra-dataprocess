@@ -8,7 +8,7 @@ var args = mnmst(process.argv.slice(2));
 
 var pgp = pgLib();
 
-var cn = "postgres://geo:"+args.p+"@localhost:5432/geo";
+var cn = "postgres://"+args.u+":"+args.p+"@localhost:5432/geo";
 
 var db = pgp(cn);
 

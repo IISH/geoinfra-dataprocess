@@ -25,8 +25,8 @@ $[WORKDIR]/geacron-import.log, %import_geacron_data <- %create_geacron_import_ta
 
 ;create a new table for geacron, filtering out unnec. styling columns
 $[WORKDIR]/geacron1.table, %create_geacron1_table <- %import_geacron_data
-    node runsql.js -p $PGPASS -o $OUTPUT $[BASE]/create_geacron1_table.sql 
+    node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT $[BASE]/create_geacron1_table.sql 
 
 ;put geacron entities in entities table, and fix overlapping dateranges
 $[WORKDIR]/geacron_entities.log, %create_geacron_entities <- %create_geacron1_table, %create_entities_table
-    node runsql.js -p $PGPASS -o $OUTPUT $[BASE]/geacron_entities.sql 
+    node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT $[BASE]/geacron_entities.sql 

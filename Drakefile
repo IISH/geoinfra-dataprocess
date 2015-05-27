@@ -11,7 +11,7 @@ PGPASS=$(sed '4q;d' ./config)
 
 ;DEVELOPMENT: drop the schema to reset! We can do this because it's a small dataset.
 $[WORKDIR]/restart.log, %restart <-
-    node restart.js -p $PGPASS -o $OUTPUT
+    node restart.js -u $PGUSER -p $PGPASS -o $OUTPUT
 
 ;this creates the geoinfra schema in the database. NOTE: this can be shared by all workflows. If the timestamp is up to date, it needn't be recreated if we request downstream steps.
 $[WORKDIR]/geoinfra.schema, %create_general_schema <- $[WORKDIR]/restart.log
@@ -20,12 +20,12 @@ $[WORKDIR]/geoinfra.schema, %create_general_schema <- $[WORKDIR]/restart.log
 ;create the entities table (TODO: move this to a different drakefile!)
 ;TODO: the cshapes fill is independent of the entities table creation. this step should be 'add_cshapes_to_entities', and create_entities_table should be elsewhere.
 $[WORKDIR]/entities.table, %create_entities_table <- %create_general_schema
-    node runsql.js -p $PGPASS -o $OUTPUT cshapes/create_entities_table.sql
+    node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT cshapes/create_entities_table.sql
 
 
 ;create relations table
 $[WORKDIR]/relations.table, %create_relations_table <- %create_general_schema
-    node runsql.js -p $PGPASS -o $OUTPUT cshapes/create_relations_table.sql
+    node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT cshapes/create_relations_table.sql
 
 SUBTASK_NAME=cshapes
 %call cshapes/Drakefile
