@@ -3,26 +3,22 @@
 BASE=$[BASE]/clioinfra
 WORKDIR=../$[WORKDIR]
 
-;create gdp table
-$[WORKDIR]/create_gdp_import.table, %create_gdp_import_table <- %create_general_schema
-    node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT $[BASE]/create_gdp_import_table.sql
 
-;load data from csv. Custom js script for now because of absolute path req
-$[WORKDIR]/load_gdp_data.log, %load_gdp_data <- %create_gdp_import_table
-    node $[BASE]/loadgdp.js -u $PGUSER -p $PGPASS -o $OUTPUT -i /home/hans/wm/local/data/iisg/clioinfra/gdp_europe_1870-1913.csv
+;load data from csv. 
+$[WORKDIR]/load_gdp_data.log, %load_gdp_data <- %create_general_schema
+    ogr2ogr -progress -overwrite -f "PostgreSQL" PG:"dbname='geo' host='localhost' port='5432' user='$PGUSER' password='$PGPASS'" $[INPUTDIR]/clioinfra/gdp_europe_1870-1913.csv -nln gdp -lco SCHEMA="geoinfra" -lco overwrite=yes | tee -a $OUTPUT
+    node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT $[BASE]/drop_gdp_fids.sql
 
 ;unpivot the table
 $[WORKDIR]/unpivot_gdp.log, %unpivot_gdp <- %load_gdp_data
     node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT $[BASE]/unpivot_gdp.sql 
 
 
-;create population table
-$[WORKDIR]/create_pop_import.table, %create_pop_import_table <- %create_general_schema
-    node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT $[BASE]/create_pop_import_table.sql
 
-;load pop data from csv. Custom js script for now because of absolute path req
-$[WORKDIR]/load_pop_data.log, %load_pop_data <- %create_pop_import_table
-    node $[BASE]/loadpop.js -u $PGUSER -p $PGPASS -o $OUTPUT -i /home/hans/wm/local/data/iisg/clioinfra/pop_europe_1870-1913.csv
+;load pop data from csv.
+$[WORKDIR]/load_pop_data.log, %load_pop_data <- %create_general_schema
+    ogr2ogr -progress -overwrite -f "PostgreSQL" PG:"dbname='geo' host='localhost' port='5432' user='$PGUSER' password='$PGPASS'" $[INPUTDIR]/clioinfra/pop_europe_1870-1913.csv -nln pop -lco SCHEMA="geoinfra" -lco overwrite=yes | tee -a $OUTPUT
+    node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT $[BASE]/drop_pop_fids.sql
 
 ;unpivot the table
 $[WORKDIR]/unpivot_pop.log, %unpivot_pop <- %load_pop_data

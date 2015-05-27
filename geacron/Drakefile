@@ -3,7 +3,7 @@ WORKDIR=../$[WORKDIR]
 
 ;create a table to import geacron shapefiles
 $[WORKDIR]/geacron-import.table, %create_geacron_import_table <- %create_general_schema
-    node runsql.js -p $PGPASS -o $OUTPUT $[BASE]/create_geacron_import_table.sql
+    node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT $[BASE]/create_geacron_import_table.sql
 
 $[WORKDIR]/geacron-copy-files.log, %copy_geacron_shapefiles <- %restart
     echo $WORKDIR

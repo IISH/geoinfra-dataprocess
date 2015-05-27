@@ -5,7 +5,10 @@ create extension if not exists hstore;
 
 CREATE table geoinfra.pop_unpivot
 AS 
-SELECT year, (h).key as name, (h).value::float As amount
- FROM (SELECT year, each(hstore(foo) - 'year'::text) As h
+SELECT year, (h).key as name, 
+       case when (h).value = '' then null
+       else (h).value::float
+       end as amount
+     FROM (SELECT year, each(hstore(foo) - 'year'::text) As h
   FROM geoinfra.pop as foo  ) As unpiv ;
 
