@@ -3,18 +3,34 @@ Geoinfra Dataprocessing
 
 Scripts and Drake workflows to process data for prototype geo-temporal store
 
-Diverse input datasets need to be mapped to a single internal model. The transformations should be broken down into as small steps as possible. Any dependencies should be handled automatically (by using Drake).
+Quickstart
+----------
 
-Ideally the development process should be testable. How will we do that?
+    git clone https://github.com/IISH/geoinfra-dataprocess
+    cd geoinfra-dataprocess
 
-Testing data processing is difficult. It's hard to get small, quick test results when you're processing potentially huge datasets.
+
+make a file called `config` and put in it:
+
+    * relative path to input data directory
+    * relative path to working directory
+    * postgres user
+    * postgres password
+
+e.g.:
+
+    ../../inputdata
+    ../process
+    username
+    password
+
+run drake:
+
+    drake
 
 
 Data and script setup
 ---------------------
-
-Make it as easy as possible to manage data and scripts.
-
 
 This repository contains the Drake workflow file and all scripts used by its steps. Think of the Drakefile as an executable Readme/TOC of the scripts.
 
@@ -50,23 +66,6 @@ The location of these other directories could be specified with a config file wh
 
 This avoids storing data in the repo (size and licensing issues).
 
-We also need some connection parameters including passwords. At the very least we shouldn't store these in our git repos. So we put these in a config file too, and read that in our Drakefile. A rudimentary method to do this is 'manually' with sed or something like that.
+We also need some connection parameters including passwords. At the very least we shouldn't store these in our git repos. So we put these in a config file too, and read that in our Drakefile.
 
 The scripts contain variables which are interpolated with the config values. Note that this doesn't make the scripts unuseable on their own; you can pass them arguments on the command line.
-
-
-
-Unified logging and error handling
-----------------------------------
-
-If I understand correctly, we need to do something with the exit status to detect error methods. The reason my workflows are continuing after errors is because my scripts are not producing non-zero exit status. What seems -- at the moment -- the best way to set this up is to use the shell protocol, call our script (node, sql, what have you) with the input and output arguments, and let the script a) decide whether it will write to the output file, b) exit with an error. This way we can write something to the log and then still exit with error; or we can exit with error without writing to the log if we prefer.
-
-It would be cool to call test functions from the update scripts as well. This way we can use the output of those to determine exit status, esp. during development.
-
-
-TopoJSON
---------
-
-We need to create topojson. Either pre-cached or on-the-fly. We need a separate endpoint for it. Everything prefixed with `topojson`.
-
-Then we need to create on-the-fly request handlers. But, if we start doing that, then we might as well ditch apache entirely and run our api with nodejs. So, let's say we can only request 'countries' as topojson for now, with time parameters. No entity filtering. Then we can create files for those, and redirect straight to them.
