@@ -2,11 +2,15 @@
 
 BASE=$[BASE]/clioinfra
 WORKDIR=../$[WORKDIR]
+INPUTDIR=../$[INPUTDIR]
 
+test.log <-
+    echo $WORKDIR
 
 ;load data from csv. 
 $[WORKDIR]/load_gdp_data.log, %load_gdp_data <- %create_general_schema
-    ogr2ogr -progress -overwrite -f "PostgreSQL" PG:"dbname='geo' host='localhost' port='5432' user='$PGUSER' password='$PGPASS'" $[INPUTDIR]/clioinfra/gdp_europe_1870-1913.csv -nln gdp -lco SCHEMA="geoinfra" -lco overwrite=yes | tee -a $OUTPUT
+    echo $INPUTDIR
+    ogr2ogr -progress -overwrite -f "PostgreSQL" PG:"dbname='geo' host='localhost' port='5432' user='$PGUSER' password='$PGPASS'" $[BASE]/$[INPUTDIR]/clioinfra/gdp_europe_1870-1913.csv -nln gdp -lco SCHEMA="geoinfra" -lco overwrite=yes | tee -a $OUTPUT
     node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT $[BASE]/drop_gdp_fids.sql
 
 ;unpivot the table
