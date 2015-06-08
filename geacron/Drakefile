@@ -5,23 +5,28 @@ WORKDIR=../$[WORKDIR]
 $[WORKDIR]/geacron-import.table, %create_geacron_import_table <- %create_general_schema
     node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT $[BASE]/create_geacron_import_table.sql
 
+
+;temporary: version conflict gdal/postgis means we can't use sqlite with ogrinfo.
+;copy shapefiles WITH year already in place, and skip addition step (next step)
 $[WORKDIR]/geacron-copy-files.log, %copy_geacron_shapefiles <- %restart
     echo $WORKDIR
     rm -rf $[BASE]/$[WORKDIR]/geacron_shapefiles
     mkdir $[BASE]/$[WORKDIR]/geacron_shapefiles
-    cp -r $[INPUTDIR]/geacron/* $[BASE]/$[WORKDIR]/geacron_shapefiles/
+    #cp -r $[INPUTDIR]/geacron/* $[BASE]/$[WORKDIR]/geacron_shapefiles/
+    cp -r $[INPUTDIR]/geacron_shapefiles_with_year/* $[BASE]/$[WORKDIR]/geacron_shapefiles/
 
 ;edit shapefiles, add column with filename to differentiate years
-$[WORKDIR]/geacron-edit-shapefiles.log, %add_year_column_to_shapefiles <- %copy_geacron_shapefiles, %create_geacron_import_table
-    echo "THE WORKDIR IS ......"
-    echo $WORKDIR
-    #args: shapefile_dir, output(log)file
-    $[BASE]/geacron_add_column_to_shape.sh $[BASE]/$[WORKDIR]/geacron_shapefiles $OUTPUT 
-    #remove copied files!
+;$[WORKDIR]/geacron-edit-shapefiles.log, %add_year_column_to_shapefiles <- %copy_geacron_shapefiles, %create_geacron_import_table
+;    echo "THE WORKDIR IS ......"
+;    echo $WORKDIR
+;    #args: shapefile_dir, output(log)file
+;    $[BASE]/geacron_add_column_to_shape.sh $[BASE]/$[WORKDIR]/geacron_shapefiles $OUTPUT 
+;    #remove copied files!
 
 ;load geacron shapefiles into database
-$[WORKDIR]/geacron-import.log, %import_geacron_data <- %create_geacron_import_table, %add_year_column_to_shapefiles
-    $[BASE]/geacron_load.sh $PGUSER $PGPASS $[BASE]/$[WORKDIR]/geacron_shapefiles $OUTPUT
+;$[WORKDIR]/geacron-import.log, %import_geacron_data <- %create_geacron_import_table, %add_year_column_to_shapefiles
+$[WORKDIR]/geacron-import.log, %import_geacron_data <- %create_geacron_import_table
+    $[BASE]/geacron_load.sh $PGUSER $PGPASS $[BASE]/$[WORKDIR]/geacron_shapefiles_with_year $OUTPUT
 
 ;create a new table for geacron, filtering out unnec. styling columns
 $[WORKDIR]/geacron1.table, %create_geacron1_table <- %import_geacron_data
