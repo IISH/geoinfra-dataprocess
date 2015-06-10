@@ -96,7 +96,7 @@ var getGeoJson = function(qu) {
         })
         .then(null,function(error){
             console.log(error);
-            return res.status(500).send('Internal server error. This API is still under development, so it may just be a mismatch from your query parameters to the database records. Try a different time range and/or (set of) countries.');
+            return res.status(500).send('Internal server error.');
         process.exit(1);
         });    
     });
@@ -121,7 +121,7 @@ var getCountries = function(req, res) {
     })
     .then(null,function(error){
         console.log(error);
-        return res.status(500).send('Internal server error. check your server logs for more details');
+        return res.status(500).send('Internal server error. check your server logs for more details. This API is still under development, so it may just be a mismatch from your query parameters to the database records. Try a different time range and/or (set of) countries.');
     process.exit(1);
     });
     
