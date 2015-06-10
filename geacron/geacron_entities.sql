@@ -6,6 +6,7 @@ from geoinfra.geacron1
 group by area, supra_area, geom;
 
 --patch dateranges that got too long
+--TODO: I think this causes problems in cshapes, so isolate this to geacron.
 with foo as (
 select id, time, name, source_id, upper(time), lead(lower(time)) over (order by time) as llow, lead(upper(time)) over (order by time) as lhigh from geoinfra.entities
 )
