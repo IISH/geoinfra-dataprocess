@@ -37,7 +37,7 @@ This repository contains the Drake workflow file and all scripts used by its ste
 Proposed structure, where `control` is this git repo:
 
     control/
-        config          #specify working dir locations
+        config          #specify working dir locations and connecation params. Don't check into version control!
         master.drake    #master drakefile `include`ing all subfiles
         cshapes/
             Drakefile
