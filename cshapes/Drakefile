@@ -6,10 +6,6 @@
 BASE=$[BASE]/cshapes
 WORKDIR=../$[WORKDIR]
 
-test.log <-
-	ls $WORKDIR
-
-;import cshapes with ogr2ogr
 $[WORKDIR]/cshapes-import.table, %import_cshapes <- %create_general_schema
     echo $INPUTDIR
     echo $WORKDIR

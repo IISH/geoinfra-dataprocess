@@ -1,1 +1,1 @@
-alter table geoinfra.pop drop column ogc_fid;
+alter table  if exists geoinfra.pop drop column ogc_fid;

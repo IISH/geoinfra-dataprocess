@@ -4,12 +4,8 @@ BASE=$[BASE]/clioinfra
 WORKDIR=../$[WORKDIR]
 INPUTDIR=../$[INPUTDIR]
 
-test.log <-
-    echo $WORKDIR
-
 ;load data from csv. 
 $[WORKDIR]/load_gdp_data.log, %load_gdp_data <- %create_general_schema
-    echo $INPUTDIR
     ogr2ogr -progress -overwrite -f "PostgreSQL" PG:"dbname='geo' host='localhost' port='5432' user='$PGUSER' password='$PGPASS'" $[BASE]/$[INPUTDIR]/clioinfra/gdp_europe_1870-1913.csv -nln gdp -lco SCHEMA="geoinfra" -lco overwrite=yes | tee -a $OUTPUT
     node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT $[BASE]/drop_gdp_fids.sql
 
@@ -17,17 +13,14 @@ $[WORKDIR]/load_gdp_data.log, %load_gdp_data <- %create_general_schema
 $[WORKDIR]/unpivot_gdp.log, %unpivot_gdp <- %load_gdp_data
     node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT $[BASE]/unpivot_gdp.sql 
 
-
-
 ;load pop data from csv.
 $[WORKDIR]/load_pop_data.log, %load_pop_data <- %create_general_schema
-    ogr2ogr -progress -overwrite -f "PostgreSQL" PG:"dbname='geo' host='localhost' port='5432' user='$PGUSER' password='$PGPASS'" $[INPUTDIR]/clioinfra/pop_europe_1870-1913.csv -nln pop -lco SCHEMA="geoinfra" -lco overwrite=yes | tee -a $OUTPUT
+    ogr2ogr -progress -overwrite -f "PostgreSQL" PG:"dbname='geo' host='localhost' port='5432' user='$PGUSER' password='$PGPASS'" $[BASE]/$[INPUTDIR]/clioinfra/pop_europe_1870-1913.csv -nln pop -lco SCHEMA="geoinfra" -lco overwrite=yes | tee -a $OUTPUT
     node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT $[BASE]/drop_pop_fids.sql
 
 ;unpivot the table
 $[WORKDIR]/unpivot_pop.log, %unpivot_pop <- %load_pop_data
     node runsql.js -u $PGUSER -p $PGPASS -o $OUTPUT $[BASE]/unpivot_pop.sql 
-
 
 ;create table with geom
 $[WORKDIR]/gdp_with_geom.log, %gdp_with_geom <- %unpivot_gdp
